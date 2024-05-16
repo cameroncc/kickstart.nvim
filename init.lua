@@ -174,6 +174,9 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- Show file name in terminal tab title
+vim.opt.title = true
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
