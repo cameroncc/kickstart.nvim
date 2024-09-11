@@ -98,26 +98,22 @@ vim.g.have_nerd_font = true
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
--- TODO: Clean up this part
-vim.api.nvim_exec(
-  [[
-    augroup ColorColumn
-      autocmd!
-      autocmd BufEnter * lua set_colorcolumn()
-    augroup END
-]],
-  false
-)
+-- Set color column
+local color_column_group = vim.api.nvim_create_augroup('ColorColumn', { clear = true })
+vim.api.nvim_create_autocmd('BufEnter', {
+  pattern = '*',
+  callback = function()
+    local filename = vim.fn.expand '%:t'
 
-function set_colorcolumn()
-  local filename = vim.fn.expand '%:t'
+    if filename == 'COMMIT_EDITMSG' then
+      vim.opt.colorcolumn = '72'
+    else
+      vim.opt.colorcolumn = '100'
+    end
+  end,
+  group = color_column_group,
+})
 
-  if filename == 'COMMIT_EDITMSG' then
-    vim.opt.colorcolumn = '72'
-  else
-    vim.opt.colorcolumn = '100'
-  end
-end
 -- Make line numbers default
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
