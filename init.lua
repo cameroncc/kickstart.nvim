@@ -179,6 +179,16 @@ vim.opt.title = true
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
+-- Show diagnostic text popup
+vim.keymap.set('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', { desc = 'Show diagnostic text under cursor' })
+
+-- Toggle inline diagnostics
+vim.keymap.set('n', '<leader>td', function()
+  local config = vim.diagnostic.config() or {}
+  config.virtual_text = not config.virtual_text
+  vim.diagnostic.config(config)
+end, { desc = 'Toggle inline diagnostics' })
+
 -- Open netrw
 vim.keymap.set('n', '<leader>pv', vim.cmd.Ex)
 vim.g.netrw_bufsettings = 'noma nomod nu rnu nobl nowrap ro'
@@ -343,6 +353,9 @@ require('lazy').setup({
           map('n', '<leader>hp', gs.preview_hunk)
           map('n', '<leader>hu', gs.undo_stage_hunk)
           map('n', '<leader>hr', gs.reset_hunk)
+          map('n', '<leader>hb', function()
+            gs.blame_line { full = true }
+          end)
         end,
       }
     end,
