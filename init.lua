@@ -126,6 +126,12 @@ vim.o.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
 
+-- Set default shell for running commands
+vim.o.shell = '/bin/bash'
+
+-- Allow wrapped lines to scroll line-by-line
+vim.o.smoothscroll = true
+
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
@@ -248,6 +254,23 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
+-- Toggle maximize current split
+local function toggle_maximize()
+  if vim.w._is_maximized then
+    vim.cmd 'wincmd =' -- equalize all windows
+    vim.w._is_maximized = false
+  else
+    vim.cmd 'wincmd |' -- maximize width
+    vim.cmd 'wincmd _' -- maximize height
+    vim.w._is_maximized = true
+  end
+end
+
+vim.keymap.set('n', '<C-w>z', toggle_maximize, {
+  silent = true,
+  desc = 'Toggle maximize current split',
+})
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -359,13 +382,14 @@ require('lazy').setup({
           end, { expr = true })
 
           -- Actions
-          map('n', '<leader>hs', gs.stage_hunk)
-          map('n', '<leader>hp', gs.preview_hunk)
-          map('n', '<leader>hu', gs.undo_stage_hunk)
-          map('n', '<leader>hr', gs.reset_hunk)
+          map('n', '<leader>hs', gs.stage_hunk, { desc = 'Stage hunk' })
+          map('n', '<leader>hp', gs.preview_hunk, { desc = 'Preview hunk' })
+          map('n', '<leader>hu', gs.undo_stage_hunk, { desc = 'Undo stage hunk' })
+          map('n', '<leader>hr', gs.reset_hunk, { desc = 'Reset hunk' })
+          map('n', '<leader>hi', gs.preview_hunk_inline, { desc = 'Preview hunk inline' })
           map('n', '<leader>hb', function()
             gs.blame_line { full = true }
-          end)
+          end, { desc = 'Blame line' })
         end,
       }
     end,
@@ -504,12 +528,21 @@ require('lazy').setup({
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       local lga_actions = require 'telescope-live-grep-args.actions'
+      local actions = require 'telescope.actions'
       require('telescope').setup {
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
+        defaults = {
+          mappings = {
+            i = {
+              ['<C-q>'] = actions.smart_send_to_qflist + actions.open_qflist,
+            },
+            n = {
+              ['<C-q>'] = actions.smart_send_to_qflist + actions.open_qflist,
+            },
+          },
+        },
         --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
         --   },
         -- },
@@ -547,7 +580,7 @@ require('lazy').setup({
         builtin.find_files {
           find_command = { 'rg', '--files', '--hidden', '-g', '!.git' },
         }
-      end, { noremap = true, silent = true, desc = '[S]earch Hiddne Fil[E]s' })
+      end, { noremap = true, silent = true, desc = '[S]earch Hidden Fil[E]s' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
@@ -731,6 +764,7 @@ require('lazy').setup({
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
+    dependencies = { 'nvim-treesitter/nvim-treesitter-textobjects' },
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
@@ -738,18 +772,26 @@ require('lazy').setup({
         'bash',
         'c',
         'diff',
+        'git_config',
+        'git_rebase',
+        'gitcommit',
+        'gitignore',
         'html',
         'ini',
         'json',
         'lua',
         'luadoc',
+        'make',
         'markdown',
         'markdown_inline',
         'python',
         'query',
+        'ssh_config',
+        'tmux',
         'toml',
         'vim',
         'vimdoc',
+        'xml',
         'yaml',
       },
       -- Autoinstall languages that are not installed
@@ -762,6 +804,19 @@ require('lazy').setup({
         additional_vim_regex_highlighting = { 'ruby' },
       },
       indent = { enable = true, disable = { 'ruby' } },
+      textobjects = {
+        select = {
+          enable = true,
+          lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
+          keymaps = {
+            -- You can use the capture groups defined in textobjects.scm
+            ['af'] = '@function.outer',
+            ['if'] = '@function.inner',
+            ['ac'] = '@class.outer',
+            ['ic'] = '@class.inner',
+          },
+        },
+      },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
