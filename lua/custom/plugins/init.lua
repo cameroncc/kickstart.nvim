@@ -16,5 +16,24 @@ return {
       vim.keymap.set('n', '];', dropbar_api.select_next_context, { desc = 'Select next context' })
     end,
   },
-  { 'itchyny/vim-qfedit' },
+  {
+    'itchyny/vim-qfedit',
+    config = function()
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = 'qf',
+        callback = function()
+          vim.keymap.set('n', 'dd', '"_dd', { buffer = true, noremap = true })
+        end,
+      })
+    end,
+  },
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' }, -- if you use the mini.nvim suite
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.icons' },        -- if you use standalone mini plugins
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
+  },
 }
