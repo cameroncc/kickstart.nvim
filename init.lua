@@ -225,6 +225,9 @@ vim.keymap.set('n', '<leader>td', function()
   vim.diagnostic.config(config)
 end, { desc = 'Toggle inline diagnostics' })
 
+-- Open a terminal in a split using zsh as the shell
+vim.keymap.set('n', '<leader>tz', ':vsplit | terminal zsh<CR>i', { noremap = true, silent = true })
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -932,6 +935,7 @@ require('lazy').setup({
         -- Conform can also run multiple formatters sequentially
         python = { 'ruff_organize_imports', 'ruff_format' },
         html = { 'prettier' },
+        javascript = { 'prettier' },
         xml = { 'xmlformat' },
         svg = { 'xmlformat' },
         --

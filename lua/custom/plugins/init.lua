@@ -36,4 +36,10 @@ return {
     ---@type render.md.UserConfig
     opts = {},
   },
+  {
+    'Almo7aya/openingh.nvim',
+    config = function()
+      vim.keymap.set('n', '<Leader>gf', ':OpenInGHFileLines! <CR>', { silent = true, noremap = true, desc = 'Open current line in GitHub' })
+    end,
+  },
 }
