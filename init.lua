@@ -1185,6 +1185,7 @@ require('lazy').setup({
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    commit = '42fc28ba918343ebfd5565147a42a26580579482',
     build = ':TSUpdate',
     dependencies = { 'nvim-treesitter/nvim-treesitter-textobjects' },
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
